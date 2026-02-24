@@ -138,11 +138,35 @@ go build -o ./bin/app ./cmd/server
 
 ## 8. 加密详情
 
-上传文件在 `storage/` 中按分块 AES-256-GCM 方式加密存储。
-数据库中的文件元信息（文件名/路径/大小/描述/上传者）也以密文形式存储，仅在后端内存中解密。
-下载时会对每个分块进行认证并解密；若完整性失败，将返回错误。
+本项目的文件与元数据均使用 AES-256-GCM 进行认证加密，密钥由 `file_crypto.key` 派生。
 
-**重要提示：**更改 `file_crypto.key` 会导致已有文件无法读取。
+**密钥策略**
+- `file_crypto.key` 必须是 Base64 URL-safe（无填充）的密钥，解码后长度至少 32 字节。
+- 使用 HMAC-SHA256 从同一主密钥派生两把子密钥：
+- 文件内容密钥：`HMAC(key, "file-gcm-aes256")`
+- 元数据密钥：`HMAC(key, "db-meta-gcm-aes256")`
+
+**文件加密（分块）**
+- 算法：AES-256-GCM。
+- 分块大小：32 KB。
+- 文件头格式：`SFB2` 魔数 + 8 字节随机前缀（nonce prefix）。
+- 每个分块的 nonce：`prefix(8)` + `counter(4)`（大端递增计数）。
+- 附加认证数据（AAD）：4 字节计数器（大端）。
+- 每个分块存储格式：`uint32(len(sealed))`（大端）+ `sealed`（密文 + GCM tag）。
+- 解密时逐块认证并写出，任一分块认证失败即返回 `file integrity check failed`。
+
+**元数据加密（数据库字段）**
+- 字段：文件名、存储路径、大小、描述、上传者 ID。
+- 每个字段独立加密，随机 12 字节 nonce。
+- 存储格式：`v1:` + Base64 URL-safe（无填充）编码的 `nonce || sealed`。
+- 解密失败将报 `metadata integrity check failed`，列表接口会跳过该条记录以避免影响整体返回。
+
+**兼容与迁移**
+- 若数据库中 `enc_*` 字段为空，会回退读取旧字段（`legacy_*`），用于兼容旧数据。
+
+**重要提示**
+- 更改 `file_crypto.key` 会导致已有文件与元数据无法解密。
+- 若看到 `invalid file magic` 或 `invalid encrypted metadata format`，通常是密钥不匹配、格式变更或数据损坏。
 
 ---
 

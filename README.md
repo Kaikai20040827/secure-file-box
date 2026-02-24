@@ -138,11 +138,35 @@ Files:
 
 ## 8. Encryption Details
 
-Uploaded file data is stored encrypted in `storage/` using AES-256-GCM chunk encryption.
-File metadata in DB (`filename/path/size/description/uploader`) is also stored as ciphertext and only decrypted in backend memory.
-On download, each chunk is authenticated and decrypted server-side. If integrity fails, download returns an error.
+File content and metadata are both protected with AES-256-GCM, with keys derived from `file_crypto.key`.
 
-**Important:** Changing `file_crypto.key` will make existing files unreadable.
+**Key strategy**
+- `file_crypto.key` must be Base64 URL-safe (no padding) and decode to at least 32 bytes.
+- Two subkeys are derived via HMAC-SHA256 from the same master key:
+- File content key: `HMAC(key, "file-gcm-aes256")`
+- Metadata key: `HMAC(key, "db-meta-gcm-aes256")`
+
+**File encryption (chunked)**
+- Algorithm: AES-256-GCM.
+- Chunk size: 32 KB.
+- File header: magic `SFB2` + 8-byte random nonce prefix.
+- Per-chunk nonce: `prefix(8)` + `counter(4)` (big-endian, increasing).
+- AAD: 4-byte counter (big-endian).
+- Chunk storage format: `uint32(len(sealed))` (big-endian) + `sealed` (ciphertext + GCM tag).
+- Decryption authenticates each chunk; any failure returns `file integrity check failed`.
+
+**Metadata encryption (DB fields)**
+- Fields: filename, storage path, size, description, uploader ID.
+- Each field is encrypted independently with a random 12-byte nonce.
+- Stored format: `v1:` + Base64 URL-safe (no padding) of `nonce || sealed`.
+- Decrypt failures return `metadata integrity check failed`; list API skips such rows to avoid breaking the entire response.
+
+**Compatibility and migration**
+- If `enc_*` fields are empty, the service falls back to legacy fields (`legacy_*`).
+
+**Important**
+- Changing `file_crypto.key` will make existing files and metadata unreadable.
+- `invalid file magic` or `invalid encrypted metadata format` usually means key mismatch, format change, or corruption.
 
 ---
 
