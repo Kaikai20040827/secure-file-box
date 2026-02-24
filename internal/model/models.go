@@ -19,13 +19,23 @@ type User struct {
 }
 
 type File struct {
-	ID          uint           `gorm:"primarykey" json:"id"`
-	Filename    string         `gorm:"size:512" json:"filename"`
-	StoragePath string         `gorm:"size:1024" json:"-"`
-	Size        int64          `json:"size"`
-	Description string         `gorm:"size:1024" json:"description"`
-	UploaderID  string         `json:"uploader_id"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
-	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
+	ID             uint           `gorm:"primarykey" json:"id"`
+	EncFilename    string         `gorm:"column:enc_filename;type:text" json:"-"`
+	EncStoragePath string         `gorm:"column:enc_storage_path;type:text" json:"-"`
+	EncSize        string         `gorm:"column:enc_size;type:text" json:"-"`
+	EncDescription string         `gorm:"column:enc_description;type:text" json:"-"`
+	EncUploaderID  string         `gorm:"column:enc_uploader_id;type:text" json:"-"`
+	LegacyFilename string         `gorm:"column:filename" json:"-"`
+	LegacyPath     string         `gorm:"column:storage_path" json:"-"`
+	LegacySize     int64          `gorm:"column:size" json:"-"`
+	LegacyDesc     string         `gorm:"column:description" json:"-"`
+	LegacyUploader string         `gorm:"column:uploader_id" json:"-"`
+	Filename       string         `gorm:"-" json:"filename"`
+	StoragePath    string         `gorm:"-" json:"-"`
+	Size           int64          `gorm:"-" json:"size"`
+	Description    string         `gorm:"-" json:"description"`
+	UploaderID     string         `gorm:"-" json:"uploader_id"`
+	CreatedAt      time.Time      `json:"created_at"`
+	UpdatedAt      time.Time      `json:"updated_at"`
+	DeletedAt      gorm.DeletedAt `gorm:"index" json:"-"`
 }

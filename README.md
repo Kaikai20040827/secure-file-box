@@ -5,7 +5,7 @@ A Go + Gin web app for user auth and encrypted file storage with a static HTML/C
 
 **Key features**
 - User registration/login with JWT
-- Encrypted file upload/download (AES-CTR + HMAC integrity)
+- Encrypted file upload/download (AES-256-GCM)
 - File listing & deletion
 - Static web UI served by the backend
 
@@ -138,11 +138,9 @@ Files:
 
 ## 8. Encryption Details
 
-Uploaded file data is stored encrypted in `storage/` using:
-- AES-CTR for streaming encryption
-- HMAC-SHA256 for integrity verification
-
-On download, the HMAC is verified **before** decryption. If integrity fails, download returns an error.
+Uploaded file data is stored encrypted in `storage/` using AES-256-GCM chunk encryption.
+File metadata in DB (`filename/path/size/description/uploader`) is also stored as ciphertext and only decrypted in backend memory.
+On download, each chunk is authenticated and decrypted server-side. If integrity fails, download returns an error.
 
 **Important:** Changing `file_crypto.key` will make existing files unreadable.
 
@@ -157,7 +155,7 @@ No automated tests are included yet.
 ## 10. Troubleshooting
 
 - **MySQL auth error**: verify `database.user/password` and DB is reachable.
-- **Invalid file magic / integrity check failed**: file was encrypted with a different `file_crypto.key` or corrupted.
+- **Invalid file magic / integrity check failed**: file was encrypted with a different `file_crypto.key`, uses an old format, or is corrupted.
 - **Key errors at startup**: ensure `file_crypto.key` is valid base64 URL-safe and decodes to at least 32 bytes.
 
 ---
