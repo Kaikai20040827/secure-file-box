@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="shortcut icon" href="../static/images/logo.png">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <img src="../static/images/logo.png" alt="">
+            <h2>U<span class="danger">M</span>S</h2>
+        </div>
+        <div class="navbar">
+            <a href="/index">
+                <span class="material-icons-sharp">home</span>
+                <h3>Home</h3>
+            </a>
+            <a href="/timetable" onclick="timeTableAll()">
+                <span class="material-icons-sharp">today</span>
+                <h3>Time Table</h3>
+            </a>
+            <a href="/exam">
+                <span class="material-icons-sharp">grid_view</span>
+                <h3>Examination</h3>
+            </a>
+            <a href="/password">
+                <span class="material-icons-sharp">password</span>
+                <h3>Change Password</h3>
+            </a>
+            <a href="#">
+                <span class="material-icons-sharp">logout</span>
+                <h3>Logout</h3>
+            </a>
+        </div>
+        <div id="profile-btn">
+            <span class="material-icons-sharp">person</span>
+        </div>
+        <div class="theme-toggler">
+            <span class="material-icons-sharp active">light_mode</span>
+            <span class="material-icons-sharp">dark_mode</span>
+        </div>
+    </header>
+
+    <main style="padding-top:4rem; width:90%; margin: 2rem auto;">
+        <div class="settings-container">
+            <form id="settingsForm"
+                style="width:100%; max-width:720px; margin:auto; background:var(--color-white); padding:1.4rem; border-radius:12px; box-shadow:var(--box-shadow);">
+                <h2>Profile Settings</h2>
+                <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                    <div style="flex:1; min-width:200px;">
+                        <label>Email</label>
+                        <input id="settingsEmail" type="email" style="width:100%; padding:.6rem; margin-top:.4rem;"
+                            placeholder="your@email.com">
+                    </div>
+                    <div style="flex:1; min-width:200px;">
+                        <label>Display Name</label>
+                        <input id="settingsName" type="text" style="width:100%; padding:.6rem; margin-top:.4rem;"
+                            placeholder="Your name">
+                    </div>
+                </div>
+
+                <div style="margin-top:1rem;">
+                    <label>Profile Photo</label>
+                    <input id="settingsPhoto" type="file" style="display:block; margin-top:.4rem;">
+                </div>
+
+                <div style="margin-top:1rem; display:flex; gap:1rem;">
+                    <button type="button" class="btn" onclick="saveSettings()">Save</button>
+                    <a href="/index" class="text-muted">Cancel</a>
+                </div>
+                <p id="settingsResult" style="margin-top:.6rem;"></p>
+            </form>
+        </div>
+    </main>
+
+    <script src="../static/timeTable.js"></script>
+    <script src="../static/app.js"></script>
+    <script>
+        function saveSettings() {
+            const result = document.getElementById('settingsResult')
+            result.innerText = ''
+            const fd = new FormData()
+            const email = document.getElementById('settingsEmail').value
+            const name = document.getElementById('settingsName').value
+            const photo = document.getElementById('settingsPhoto').files[0]
+            if (email) fd.append('email', email)
+            if (name) fd.append('display_name', name)
+            if (photo) fd.append('file', photo)
+
+            const token = localStorage.getItem('token')
+            fetch(API_BASE + '/user/profile', {
+                method: 'PUT',
+                headers: token ? { 'Authorization': 'Bearer ' + token } : {},
+                body: fd
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data && (data.code === 0 || data.code === 200)) {
+                        result.innerText = '保存成功'
+                    } else {
+                        result.innerText = data.message || JSON.stringify(data)
+                    }
+                })
+                .catch(err => {
+                    console.error(err)
+                    result.innerText = '保存失败'
+                })
+        }
+    </script>
+
+</body>
+
+</html>

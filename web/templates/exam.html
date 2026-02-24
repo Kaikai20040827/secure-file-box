@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <link rel="shortcut icon" href="../static/images/logo.png">
+    <link rel="stylesheet" href="../static/style.css">
+
+    <style>
+        body {
+            overflow: hidden;
+        }
+
+        header {
+            position: relative;
+        }
+
+        .exam {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 80vh;
+            width: 80%;
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <span style="display: inline-block;">
+                <a href="/index" style="display: flex; align-items: center; text-decoration: none;">
+                    <img src="../static/images/logo.png" alt="Logo" style="height: 29px; margin-right: 10px;">
+                    <h2 style="margin: 0;">U<span class="danger">M</span>S</h2>
+                </a>
+            </span>
+        </div>
+        <div class="navbar">
+            <a href="/index">
+                <span class="material-icons-sharp">home</span>
+                <h3>Home</h3>
+            </a>
+            <a href="/timetable" onclick="timeTableAll()">
+                <span class="material-icons-sharp">today</span>
+                <h3>Time Table</h3>
+            </a>
+            <a href="/exam" class="active">
+                <span class="material-icons-sharp">grid_view</span>
+                <h3>Examination</h3>
+            </a>
+            <a href="/password">
+                <span class="material-icons-sharp">password</span>
+                <h3>Change Password</h3>
+            </a>
+            <button id="logout" class="Btn" onclick="logout()">
+                <div class="sign">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="white" d="M502.6 278.6l-160 160c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 
+               0-33.9L401.4 288H192c-13.3 0-24-10.7-24-24s10.7-24 
+               24-24h209.4L308.7 107.3c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 
+               33.9 0l160 160c9.5 9.4 9.5 24.6 0 35.2zM160 96H96c-17.7 
+               0-32 14.3-32 32v256c0 17.7 14.3 32 
+               32 32h64c17.7 0 32 14.3 32 32s-14.3 32-32 
+               32H96c-53 0-96-43-96-96V128C0 75 43 32 96 32h64c17.7 
+               0 32 14.3 32 32s-14.3 32-32 32z" />
+                    </svg>
+                </div>
+                <div class="text">Logout</div>
+            </button>
+        </div>
+        <div id="profile-btn" style="display: none;">
+            <span class="material-icons-sharp">person</span>
+        </div>
+        <div class="theme-toggler">
+            <span class="material-icons-sharp active">light_mode</span>
+            <span class="material-icons-sharp">dark_mode</span>
+        </div>
+    </header>
+
+    <main>
+        <div class="exam timetable">
+            <h2>Exam Available</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Subject</th>
+                        <th>Room no.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>13 May 2022</td>
+                        <td>09-12 AM</td>
+                        <td>CS200</td>
+                        <td>38-718</td>
+                    </tr>
+                    <tr>
+                        <td>16 May 2022</td>
+                        <td>09-12 AM</td>
+                        <td>DBMS130</td>
+                        <td>38-718</td>
+                    </tr>
+                    <tr>
+                        <td>18 May 2022</td>
+                        <td>09-12 AM</td>
+                        <td>MTH166</td>
+                        <td>38-718</td>
+                    </tr>
+                    <tr>
+                        <td>20 May 2022</td>
+                        <td>09-12 AM</td>
+                        <td>NS200</td>
+                        <td>38-718</td>
+                    </tr>
+                    <tr>
+                        <td>23 May 2022</td>
+                        <td>09-12 AM</td>
+                        <td>CS849</td>
+                        <td>38-718</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+    </main>
+
+</body>
+
+<script src="../static/app.js"></script>
+
+</html>
