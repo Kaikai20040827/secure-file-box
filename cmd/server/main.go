@@ -6,12 +6,11 @@ import (
 	"strconv"
 
 	"github.com/Kaikai20040827/graduation/internal/config"
-	"github.com/Kaikai20040827/graduation/internal/logo"
 	"github.com/Kaikai20040827/graduation/internal/handler"
+	"github.com/Kaikai20040827/graduation/internal/logo"
 	"github.com/Kaikai20040827/graduation/internal/pkg"
 	"github.com/Kaikai20040827/graduation/internal/routes"
 	"github.com/Kaikai20040827/graduation/internal/service"
-
 )
 
 const (
@@ -19,7 +18,7 @@ const (
 )
 
 func main() {
-	logo.DrawLogo();
+	logo.DrawLogo()
 	fmt.Println("-----Secure File Box-----")
 	fmt.Println("")
 	//counters := config.NewFuncCounters()
@@ -49,14 +48,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error: %v", err)
 	}
-	
+
 	fmt.Println("-----Initialized database successfully-----")
 	fmt.Println("")
 
 	// 4. Services
 	fmt.Println("-----Starting initializing service(UserService, FileService)-----")
 	userSrv := service.NewUserService(db)
-	fileSrv := service.NewFileService(db, "../../storage")
+	fileSrv := service.NewFileService(db, "../../storage", cfg.JWT.Secret)
 	// fmt.Printf("(%d/2) done", )
 	// fmt.Println("")
 	fmt.Println("-----Initialized UserService and FileService successfully-----")
@@ -84,7 +83,7 @@ func main() {
 	routes.RegisterAPIRoutes(r, authH, userH, fileH, &cfg.JWT)
 	fmt.Println("-----Initialized API successfully-----")
 	fmt.Println("")
-	
+
 	// 8. 启动
 	port := strconv.Itoa(cfg.Server.Port)
 	host := cfg.Server.Host

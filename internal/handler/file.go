@@ -100,13 +100,13 @@ func (h *FileHandler) ListFiles(c *gin.Context) {
 func (h *FileHandler) DownloadFile(c *gin.Context) {
 	idStr := c.Param("id")
 	id, _ := strconv.Atoi(idStr)
-	f, err := h.fileSrv.GetFileByID(uint(id))
+	f, data, err := h.fileSrv.ReadDecryptedFile(uint(id))
 	if err != nil {
 		pkg.JSONError(c, 404, "file not found")
 		return
 	}
 	c.Header("Content-Disposition", "attachment; filename=\""+f.Filename+"\"")
-	c.File(f.StoragePath)
+	c.Data(http.StatusOK, "application/octet-stream", data)
 }
 
 // Delete
