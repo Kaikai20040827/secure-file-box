@@ -79,16 +79,11 @@ func (s *UserService) DeleteUser(username string, inputPassword string) error {
 }
 
 // oldPassword should be input by users
-func (s *UserService) ChangePassword(email string, oldPassword string, newPassword string) error {
-	var count int64
-	s.db.Model(&model.User{}).Where("Email = ?", email).Count(&count)
-
-	if count == 0 {
+func (s *UserService) ChangePassword(userID uint, oldPassword string, newPassword string) error {
+	var user model.User
+	if err := s.db.First(&user, userID).Error; err != nil {
 		return errors.New("user does not exist")
 	}
-
-	var user *model.User
-	s.db.Model(&model.User{}).Where("Email = ?", email).Find(&user)
 
 	if err := pkg.CheckPassword(user.Password, oldPassword); err != nil {
 		return errors.New("old password incorrect")
@@ -153,12 +148,21 @@ func (s *UserService) GetByUsername(username string) (*model.User, error) {
 	return &u, nil
 }
 
-func (s *UserService) UpdateProfile(id uint, username string) (*model.User, error) {
+func (s *UserService) UpdateProfile(id uint, username string, email string) (*model.User, error) {
 	var u model.User
 	if err := s.db.First(&u, id).Error; err != nil {
 		return nil, err
 	}
 	u.Username = username
+	if email != "" && email != u.Email {
+		var existing model.User
+		if err := s.db.Where("email = ?", email).First(&existing).Error; err == nil {
+			return nil, errors.New("email already in use")
+		} else if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, err
+		}
+		u.Email = email
+	}
 	if err := s.db.Save(&u).Error; err != nil {
 		return nil, err
 	}

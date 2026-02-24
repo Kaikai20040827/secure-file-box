@@ -49,6 +49,7 @@ func (uh *UserHandler) GetProfile(context *gin.Context) {
 
 type UpdateProfileReq struct {
 	Username string `json:"username" binding:"required"`
+	Email    string `json:"email"`
 }
 
 func (uh *UserHandler) UpdateProfile(context *gin.Context) {
@@ -60,7 +61,7 @@ func (uh *UserHandler) UpdateProfile(context *gin.Context) {
 
 	uidv, _ := context.Get("user_id")
 	uid := uidv.(uint)
-	u, err := uh.userSrv.UpdateProfile(uid, req.Username)
+	u, err := uh.userSrv.UpdateProfile(uid, req.Username, req.Email)
 	if err != nil {
 		pkg.JSONError(context, 50001, err.Error())
 		return
@@ -70,7 +71,7 @@ func (uh *UserHandler) UpdateProfile(context *gin.Context) {
 
 type ChangePasswordReq struct {
 	OldPassword string `json:"old_password" binding:"required"`
-	NewPassword string `json:"new_password" binding:"required, min=6"`
+	NewPassword string `json:"new_password" binding:"required,min=6"`
 }
 
 func (uh *UserHandler) ChangePassword(context *gin.Context) {
@@ -80,10 +81,14 @@ func (uh *UserHandler) ChangePassword(context *gin.Context) {
 		return
 	}
 
-	emailv, _ := context.Get("email")
-	email := emailv.(string)
+	uidv, ok := context.Get("user_id")
+	if !ok {
+		pkg.JSONError(context, 401, "unauthorized")
+		return
+	}
+	uid := uidv.(uint)
 
-	if err := uh.userSrv.ChangePassword(email, req.OldPassword, req.NewPassword); err != nil {
+	if err := uh.userSrv.ChangePassword(uid, req.OldPassword, req.NewPassword); err != nil {
 		pkg.JSONError(context, 40002, err.Error())
 		return
 	}

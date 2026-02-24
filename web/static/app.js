@@ -312,6 +312,58 @@ function getAuthHeaders(extra = {}) {
     return headers;
 }
 
+function changePassword() {
+    const result = document.getElementById('passwordResult');
+    if (result) result.innerText = '';
+
+    if (!getAuthToken()) {
+        if (result) result.innerText = 'Please sign in again.';
+        return;
+    }
+
+    const oldPass = document.getElementById('currentpass') && document.getElementById('currentpass').value;
+    const newPass = document.getElementById('newpass') && document.getElementById('newpass').value;
+    const confirmPass = document.getElementById('confirmpass') && document.getElementById('confirmpass').value;
+
+    if (!oldPass || !newPass) {
+        if (result) result.innerText = 'Please fill in all password fields.';
+        return;
+    }
+
+    if (newPass.length < 6) {
+        if (result) result.innerText = 'New password must be at least 6 characters.';
+        return;
+    }
+
+    if (newPass !== confirmPass) {
+        if (result) result.innerText = 'Passwords do not match.';
+        return;
+    }
+
+    fetch(API_BASE + '/user/password', {
+        method: 'PUT',
+        headers: getAuthHeaders({ 'Content-Type': 'application/json', 'Accept': 'application/json' }),
+        body: JSON.stringify({ old_password: oldPass, new_password: newPass })
+    })
+        .then(res => parseJsonSafe(res).then(data => ({ res, data })))
+        .then(({ res, data }) => {
+            if (!res.ok) {
+                throw new Error(getErrorMessage(data, 'Update failed'));
+            }
+            if (result) result.innerText = 'Password updated.';
+            const oldInput = document.getElementById('currentpass');
+            const newInput = document.getElementById('newpass');
+            const confirmInput = document.getElementById('confirmpass');
+            if (oldInput) oldInput.value = '';
+            if (newInput) newInput.value = '';
+            if (confirmInput) confirmInput.value = '';
+        })
+        .catch(err => {
+            console.error(err);
+            if (result) result.innerText = err.message || 'Update failed';
+        });
+}
+
 function renderFiles(items) {
     const filesBody = document.getElementById('filesBody');
     if (!filesBody) return;
@@ -801,9 +853,9 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Login form not found! Check the HTML.');
     }
 
-    // 为按钮添加点击事件作为备用
+    // 为按钮添加点击事件作为备用（避免和内联onclick重复触发）
     const loginButton = document.querySelector('.btn-login');
-    if (loginButton) {
+    if (loginButton && !loginButton.hasAttribute('onclick')) {
         console.log('Found login button');
         loginButton.addEventListener('click', function (e) {
             console.log('Button click event triggered');
@@ -819,4 +871,13 @@ document.addEventListener('DOMContentLoaded', function () {
         // 可以选择自动跳转或显示已登录状态
         // window.location.href = "/index";
     }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    const changeForm = document.getElementById('changePasswordForm');
+    if (!changeForm) return;
+    changeForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        changePassword();
+    });
 });

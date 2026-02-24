@@ -52,21 +52,19 @@
         </div>
     </header>
 
-    <main style="padding-top:4rem; width:90%; margin: 2rem auto;">
+    <main style="padding-top:4rem; width:90%; margin: 0 auto 2rem;">
         <div class="settings-container">
             <form id="settingsForm"
                 style="width:100%; max-width:720px; margin:auto; background:var(--color-white); padding:1.4rem; border-radius:12px; box-shadow:var(--box-shadow);">
                 <h2>Profile Settings</h2>
                 <div style="display:flex; gap:1rem; flex-wrap:wrap;">
                     <div style="flex:1; min-width:200px;">
-                        <label>Email</label>
-                        <input id="settingsEmail" type="email" style="width:100%; padding:.6rem; margin-top:.4rem;"
-                            placeholder="your@email.com">
+                        <label>Displayed Email</label>
+                        <input id="settingsEmail" type="email" class="form-input" placeholder="your@email.com">
                     </div>
                     <div style="flex:1; min-width:200px;">
-                        <label>Display Name</label>
-                        <input id="settingsName" type="text" style="width:100%; padding:.6rem; margin-top:.4rem;"
-                            placeholder="Your name">
+                        <label>Displayed name</label>
+                        <input id="settingsName" type="text" class="form-input" placeholder="your name">
                     </div>
                 </div>
 
@@ -77,7 +75,7 @@
                             <img class="profile-avatar" src="../static/images/profile-1.jpg" alt="">
                         </div>
                         <div>
-                            <input id="avatarInput" type="file" accept="image/*">
+                            <input id="avatarInput" class="file-input" type="file" accept="image/*">
                             <div style="margin-top:.6rem;">
                                 <button type="button" class="upload-file-btn" onclick="uploadAvatar()">Upload Avatar</button>
                             </div>
@@ -95,7 +93,6 @@
         </div>
     </main>
 
-    <script src="../static/timeTable.js"></script>
     <script src="../static/app.js"></script>
     <script>
         function loadSettingsProfile() {
@@ -117,7 +114,6 @@
                     if (!data || !(data.code === 0 || data.code === 200) || !data.data) return
                     if (data.data.email) {
                         emailInput.value = data.data.email
-                        emailInput.setAttribute('readonly', 'readonly')
                     }
                     if (data.data.username) {
                         nameInput.value = data.data.username
@@ -135,6 +131,10 @@
             }
             const email = document.getElementById('settingsEmail').value
             const name = document.getElementById('settingsName').value
+            if (!email) {
+                result.innerText = 'Email is required'
+                return
+            }
             if (!name) {
                 result.innerText = 'Display name is required'
                 return
@@ -143,7 +143,7 @@
             fetch(API_BASE + '/user/profile', {
                 method: 'PUT',
                 headers: getAuthHeaders({ 'Content-Type': 'application/json', 'Accept': 'application/json' }),
-                body: JSON.stringify({ username: name })
+                body: JSON.stringify({ username: name, email: email })
             })
                 .then(res => res.json())
                 .then(data => {
