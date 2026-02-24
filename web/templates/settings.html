@@ -70,8 +70,24 @@
                     </div>
                 </div>
 
+                <div style="margin-top:1rem;">
+                    <label>Avatar</label>
+                    <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap; margin-top:.4rem;">
+                        <div class="profile-photo" style="width:72px; height:72px;">
+                            <img class="profile-avatar" src="../static/images/profile-1.jpg" alt="">
+                        </div>
+                        <div>
+                            <input id="avatarInput" type="file" accept="image/*">
+                            <div style="margin-top:.6rem;">
+                                <button type="button" class="upload-file-btn" onclick="uploadAvatar()">Upload Avatar</button>
+                            </div>
+                            <small class="text-muted">JPG/PNG/WebP, max 5MB</small>
+                        </div>
+                    </div>
+                </div>
+
                 <div style="margin-top:1rem; display:flex; gap:1rem;">
-                    <button type="button" class="btn" onclick="saveSettings()">Save</button>
+                    <button type="button" class="save-file-btn" onclick="saveSettings()">Save</button>
                     <a href="/index" class="text-muted">Cancel</a>
                 </div>
                 <p id="settingsResult" style="margin-top:.6rem;"></p>
@@ -140,6 +156,46 @@
                 .catch(err => {
                     console.error(err)
                     result.innerText = '保存失败'
+                })
+        }
+
+        function uploadAvatar() {
+            const result = document.getElementById('settingsResult')
+            result.innerText = ''
+            if (!getAuthToken()) {
+                result.innerText = 'Please sign in again.'
+                return
+            }
+            const input = document.getElementById('avatarInput')
+            if (!input || !input.files || !input.files[0]) {
+                result.innerText = '请选择头像'
+                return
+            }
+            const file = input.files[0]
+            if (file.size > 5 * 1024 * 1024) {
+                result.innerText = '头像不能超过5MB'
+                return
+            }
+            const formData = new FormData()
+            formData.append('avatar', file)
+            fetch(API_BASE + '/user/avatar', {
+                method: 'PUT',
+                headers: getAuthHeaders(),
+                body: formData
+            })
+                .then(res => parseJsonSafe(res).then(data => ({ res, data })))
+                .then(({ res, data }) => {
+                    if (!res.ok || !isSuccess(data)) {
+                        throw new Error(getErrorMessage(data, 'Upload failed'))
+                    }
+                    result.innerText = 'Avatar updated'
+                    if (typeof loadUserAvatar === 'function') {
+                        loadUserAvatar(data.data && data.data.avatar_url ? data.data.avatar_url : undefined)
+                    }
+                })
+                .catch(err => {
+                    console.error(err)
+                    result.innerText = err.message || '上传失败'
                 })
         }
 
