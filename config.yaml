@@ -1,0 +1,21 @@
+database:
+    debug: false
+    driver: mysql
+    host: localhost
+    name: secure_file_box
+    password: "0827"
+    port: 3306
+    user: root
+file_crypto:
+    key: caMSmtNg37-rg4vs_jzM4Vfl5xBwFCJcuRA2Uf5Siqs
+jwt:
+    audience: secure_users
+    issuer: secure_file_box
+    secret: H2c_H74TeLZ2kg-JJ9ZkRMXHyQgpSfe75nZyYQx5Rpw
+server:
+    app_name: secure_file_box
+    debug: true
+    env: development
+    host: 127.0.0.1
+    port: 8080
+    time_zone: Asia/Shanghai

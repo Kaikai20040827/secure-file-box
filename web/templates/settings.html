@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="shortcut icon" href="../static/images/logo.png">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <link rel="stylesheet" href="../static/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo" title="Secure File Box">
+            <a href="/index" class="logo-link">
+                <img src="../static/images/logo.png" alt="Logo">
+                <h2>Secure <span class="danger">Box</span></h2>
+            </a>
+        </div>
+
+        <div class="navbar">
+            <a href="/index">
+                <span class="material-icons-sharp">lock</span>
+                <h3>Vault</h3>
+            </a>
+            <a href="/settings" class="active">
+                <span class="material-icons-sharp">settings</span>
+                <h3>Settings</h3>
+            </a>
+            <a href="/password">
+                <span class="material-icons-sharp">password</span>
+                <h3>Password</h3>
+            </a>
+            <button class="Btn" onclick="logout()">
+                <div class="sign">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path fill="white" d="M502.6 278.6l-160 160c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9L401.4 288H192c-13.3 0-24-10.7-24-24s10.7-24 24-24h209.4L308.7 107.3c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l160 160c9.5 9.4 9.5 24.6 0 35.2zM160 96H96c-17.7 0-32 14.3-32 32v256c0 17.7 14.3 32 32 32h64c17.7 0 32 14.3 32 32s-14.3 32-32 32H96c-53 0-96-43-96-96V128C0 75 43 32 96 32h64c17.7 0 32 14.3 32 32s-14.3 32-32 32z" />
+                    </svg>
+                </div>
+                <div class="text">Logout</div>
+            </button>
+        </div>
+
+        <div id="profile-btn">
+            <span class="material-icons-sharp">person</span>
+        </div>
+        <div class="theme-toggler">
+            <span class="material-icons-sharp active">light_mode</span>
+            <span class="material-icons-sharp">dark_mode</span>
+        </div>
+    </header>
+
+    <main style="padding-top:4rem; width:90%; margin: 2rem auto;">
+        <div class="settings-container">
+            <form id="settingsForm"
+                style="width:100%; max-width:720px; margin:auto; background:var(--color-white); padding:1.4rem; border-radius:12px; box-shadow:var(--box-shadow);">
+                <h2>Profile Settings</h2>
+                <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                    <div style="flex:1; min-width:200px;">
+                        <label>Email</label>
+                        <input id="settingsEmail" type="email" style="width:100%; padding:.6rem; margin-top:.4rem;"
+                            placeholder="your@email.com">
+                    </div>
+                    <div style="flex:1; min-width:200px;">
+                        <label>Display Name</label>
+                        <input id="settingsName" type="text" style="width:100%; padding:.6rem; margin-top:.4rem;"
+                            placeholder="Your name">
+                    </div>
+                </div>
+
+                <div style="margin-top:1rem; display:flex; gap:1rem;">
+                    <button type="button" class="btn" onclick="saveSettings()">Save</button>
+                    <a href="/index" class="text-muted">Cancel</a>
+                </div>
+                <p id="settingsResult" style="margin-top:.6rem;"></p>
+            </form>
+        </div>
+    </main>
+
+    <script src="../static/timeTable.js"></script>
+    <script src="../static/app.js"></script>
+    <script>
+        function loadSettingsProfile() {
+            const token = getAuthToken()
+            if (!token) {
+                const result = document.getElementById('settingsResult')
+                if (result) result.innerText = 'Please sign in again.'
+                return
+            }
+            const emailInput = document.getElementById('settingsEmail')
+            const nameInput = document.getElementById('settingsName')
+            if (!emailInput || !nameInput) return
+            fetch(API_BASE + '/user/profile', {
+                method: 'GET',
+                headers: getAuthHeaders({ 'Accept': 'application/json' })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (!data || !(data.code === 0 || data.code === 200) || !data.data) return
+                    if (data.data.email) {
+                        emailInput.value = data.data.email
+                        emailInput.setAttribute('readonly', 'readonly')
+                    }
+                    if (data.data.username) {
+                        nameInput.value = data.data.username
+                    }
+                })
+                .catch(() => {})
+        }
+
+        function saveSettings() {
+            const result = document.getElementById('settingsResult')
+            result.innerText = ''
+            if (!getAuthToken()) {
+                result.innerText = 'Please sign in again.'
+                return
+            }
+            const email = document.getElementById('settingsEmail').value
+            const name = document.getElementById('settingsName').value
+            if (!name) {
+                result.innerText = 'Display name is required'
+                return
+            }
+
+            fetch(API_BASE + '/user/profile', {
+                method: 'PUT',
+                headers: getAuthHeaders({ 'Content-Type': 'application/json', 'Accept': 'application/json' }),
+                body: JSON.stringify({ username: name })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data && (data.code === 0 || data.code === 200)) {
+                        result.innerText = 'Saved'
+                    } else {
+                        result.innerText = data.message || JSON.stringify(data)
+                    }
+                })
+                .catch(err => {
+                    console.error(err)
+                    result.innerText = '保存失败'
+                })
+        }
+
+        document.addEventListener('DOMContentLoaded', loadSettingsProfile)
+    </script>
+
+</body>
+
+</html>
