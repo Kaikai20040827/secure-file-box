@@ -1194,3 +1194,82 @@ main .vault-card h2 {
         width: 100%;
     }
 }
+
+.upload-file-btn {
+  padding: 6px 18px;
+  border: 0;
+  border-radius: 50px;
+  background-color: #2ba8fb;
+  color: #ffffff;
+  font-weight: Bold;
+  transition: all 0.1s;
+  -webkit-transition: all 0.1s;
+}
+
+.upload-file-btn:hover {
+  background-color: #6fc5ff;
+  box-shadow: 0 0 20px #6fc5ff50;
+  transform: scale(1.02);
+  cursor: pointer;
+}
+
+.upload-file-btn:active {
+  background-color: #3d94cf;
+  transition: all 0.1s;
+  -webkit-transition: all 0.1s;
+  box-shadow: none;
+  transform: scale(0.98);
+}
+
+.save-file-btn {
+  padding: 2.5px 10px;
+  border: 0;
+  border-radius: 100px;
+  background-color: #2ba8fb;
+  color: #ffffff;
+  font-weight: Bold;
+  transition: all 0.1s;
+  -webkit-transition: all 0.1s;
+}
+
+.save-file-btn:hover {
+  background-color: #6fc5ff;
+  box-shadow: 0 0 20px #6fc5ff50;
+  transform: scale(1.02);
+  cursor: pointer;
+}
+
+.save-file-btn:active {
+  background-color: #3d94cf;
+  transition: all 0.1s;
+  -webkit-transition: all 0.1s;
+  box-shadow: none;
+  transform: scale(0.98);
+}
+
+.choose-file-btn {
+  padding: 6px 18px;
+  border: 0;
+  border-radius: 50px;
+  background-color: #2ba8fb;
+  color: #ffffff;
+  font-weight: Bold;
+  transition: all 0.1s;
+  -webkit-transition: all 0.1s;
+}
+
+.choose-file-btn:hover {
+  background-color: #6fc5ff;
+  box-shadow: 0 0 20px #6fc5ff50;
+  transform: scale(1.02);
+  cursor: pointer;
+}
+
+.choose-file-btn:active {
+  background-color: #3d94cf;
+  transition: all 0.1s;
+  -webkit-transition: all 0.1s;
+  box-shadow: none;
+  transform: scale(0.98);
+}
+

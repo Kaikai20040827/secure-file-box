@@ -9,8 +9,8 @@ import (
 	"github.com/Kaikai20040827/graduation/internal/handler"
 	"github.com/Kaikai20040827/graduation/internal/middleware"
 
-	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 // RegisterAPIRoutes 注册所有 API 路由
@@ -45,6 +45,8 @@ func RegisterAPIRoutes(
 		// 用户
 		authRequired.GET("/user/profile", userH.GetProfile)
 		authRequired.PUT("/user/profile", userH.UpdateProfile)
+		authRequired.GET("/user/avatar", userH.GetAvatar)
+		authRequired.PUT("/user/avatar", userH.UpdateAvatar)
 		authRequired.PUT("/user/password", userH.ChangePassword)
 
 		// 文件
@@ -72,13 +74,13 @@ func RegisterAPIRoutes(
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 	r.Use(cors.New(cors.Config{
-        AllowOrigins:     []string{"http://127.0.0.1:8080", "http://localhost:8080"},
-        AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-        AllowHeaders:     []string{"Content-Type", "Authorization"},
-        AllowCredentials: true,
-        MaxAge: 24 * time.Hour,
-    }))
-	
+		AllowOrigins:     []string{"http://127.0.0.1:8080", "http://localhost:8080"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           24 * time.Hour,
+	}))
+
 	// 获取项目根目录（更可靠的方式）
 	_, filename, _, _ := runtime.Caller(0)
 	projectRoot := filepath.Dir(filepath.Dir(filepath.Dir(filename)))

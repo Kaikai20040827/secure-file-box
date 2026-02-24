@@ -207,6 +207,9 @@ function getUserProfile(options = {}) {
             console.error("无法获取邮箱，响应数据：", data);
             emailElement.innerHTML = "邮箱获取失败";
         }
+        if (data && data.data && data.data.avatar_url) {
+            loadUserAvatar(data.data.avatar_url);
+        }
         return data;
     })
     .catch(err => {
@@ -216,6 +219,39 @@ function getUserProfile(options = {}) {
             redirectToLogin();
         }
     });
+}
+
+function loadUserAvatar(avatarUrl) {
+    const token = getAuthToken();
+    if (!token) return;
+    const avatarImages = document.querySelectorAll('img.profile-avatar');
+    if (!avatarImages || avatarImages.length === 0) return;
+
+    const url = avatarUrl || "/api/v1/user/avatar";
+    fetch(url, {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    })
+    .then(res => {
+        if (!res.ok) {
+            throw new Error("avatar missing");
+        }
+        return res.blob();
+    })
+    .then(blob => {
+        if (!blob || blob.size === 0) return;
+        const objectUrl = URL.createObjectURL(blob);
+        avatarImages.forEach(img => {
+            if (img.dataset.objectUrl) {
+                URL.revokeObjectURL(img.dataset.objectUrl);
+            }
+            img.dataset.objectUrl = objectUrl;
+            img.src = objectUrl;
+        });
+    })
+    .catch(() => {});
 }
 
 function initAuthGate() {

@@ -62,6 +62,26 @@ func (f *FileService) UploadFile(fileReader io.Reader, filename string, uploader
 	return file, nil
 }
 
+func (f *FileService) SaveUserAvatar(fileReader io.Reader, filename string, userID uint) (string, int64, error) {
+	storedName := fmt.Sprintf("avatar_%d_%d_%s", userID, time.Now().UnixNano(), filename)
+	dst := filepath.Join(f.dirpath, storedName)
+	size, err := f.encryptToFile(fileReader, dst)
+	if err != nil {
+		return "", 0, err
+	}
+	return dst, size, nil
+}
+
+func (f *FileService) RemoveStoredFile(path string) error {
+	if path == "" {
+		return nil
+	}
+	if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
+		return err
+	}
+	return nil
+}
+
 func (f *FileService) UpdateFile(id uint, fileReader io.Reader, filename *string, description *string) (*model.File, error) {
 	var file model.File
 	if err := f.db.First(&file, id).Error; err != nil {

@@ -141,7 +141,7 @@ func (s *UserService) GetByID(id uint) (*model.User, error) {
 	}
 	u.Password = ""
 	return &u,
-	 nil
+		nil
 }
 
 func (s *UserService) GetByUsername(username string) (*model.User, error) {
@@ -164,5 +164,21 @@ func (s *UserService) UpdateProfile(id uint, username string) (*model.User, erro
 	}
 	u.Password = ""
 
+	return &u, nil
+}
+
+func (s *UserService) UpdateAvatar(id uint, avatarPath string, avatarMime string) (*model.User, error) {
+	var u model.User
+	if err := s.db.First(&u, id).Error; err != nil {
+		return nil, err
+	}
+	now := time.Now()
+	u.AvatarPath = avatarPath
+	u.AvatarMime = avatarMime
+	u.AvatarUpdatedAt = &now
+	if err := s.db.Save(&u).Error; err != nil {
+		return nil, err
+	}
+	u.Password = ""
 	return &u, nil
 }

@@ -69,7 +69,7 @@ func main() {
 	// 5. Handlers
 	fmt.Println("-----Starting initializing handlers(UserService, FileService)-----")
 	authH := handler.NewAuthHandler(userSrv, &cfg.JWT)
-	userH := handler.NewUserHandler(userSrv)
+	userH := handler.NewUserHandler(userSrv, fileSrv)
 	fileH := handler.NewFileHandler(fileSrv)
 	// fmt.Printf("(%d/3) done", )
 	// fmt.Println("")
