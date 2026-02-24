@@ -4,6 +4,8 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -61,7 +63,7 @@ func LoadConfig() (*Config, error) {
 	// 配置文件名
 	v.SetConfigName("config")
 	v.SetConfigType("yaml")
-	v.AddConfigPath("../../") // 根目录读取 config.yaml
+	addConfigPaths(v)
 	fmt.Println("✓ Loading config file done")
 
 	// 支持环境变量覆盖，例如：SERVER_APP_NAME
@@ -100,6 +102,19 @@ func LoadConfig() (*Config, error) {
 	fmt.Println("✓ Validating config file done")
 
 	return &cfg, nil
+}
+
+func addConfigPaths(v *viper.Viper) {
+	// Support running from project root, cmd/server, or other working directories.
+	v.AddConfigPath(".")
+	v.AddConfigPath("..")
+	v.AddConfigPath("../..")
+	v.AddConfigPath("../../")
+
+	if _, currentFile, _, ok := runtime.Caller(0); ok {
+		projectRoot := filepath.Dir(filepath.Dir(filepath.Dir(currentFile)))
+		v.AddConfigPath(projectRoot)
+	}
 }
 
 func setDefaults(v *viper.Viper) {

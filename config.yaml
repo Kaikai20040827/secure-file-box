@@ -7,11 +7,11 @@ database:
     port: 3306
     user: root
 file_crypto:
-    key: -PHiHBq5y8VBwoxlSpMW8EtA8VxRcxS3vH6tymOvdeI
+    key: pju2nskrZdZ6X0zXeDt91lcjkEBqdOuLDbnOusNK9dM
 jwt:
     audience: secure_users
     issuer: secure_file_box
-    secret: jvSn7d0cJO8iHA_-H8qomIV1--vCt2keBnEP4oVbTwQ
+    secret: LL6FFyTyLLh9My7v9ySCHXxn6LL5z4tBiItAXfwdm6M
 server:
     app_name: secure_file_box
     debug: true

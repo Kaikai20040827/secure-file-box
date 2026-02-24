@@ -196,12 +196,16 @@ func (s *FileService) ListFiles(page, size int) (total int64, files []model.File
 	if err != nil {
 		return
 	}
+	filtered := make([]model.File, 0, len(files))
 	for i := range files {
 		if derr := s.decryptFileMetadata(&files[i]); derr != nil {
-			err = derr
-			return
+			// Skip records encrypted with a different key or corrupted metadata,
+			// so one bad row doesn't break the whole listing API.
+			continue
 		}
+		filtered = append(filtered, files[i])
 	}
+	files = filtered
 	return
 }
 
