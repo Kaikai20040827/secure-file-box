@@ -1,6 +1,3 @@
-/* =========================================
-   原有CSS代码（保持不变）
-========================================= */
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
 :root {
@@ -38,6 +35,15 @@
     text-decoration: none;
     list-style: none;
     box-sizing: border-box;
+}
+
+.loginlogo {
+    position: relative;
+    left: auto;
+}
+
+.logo {
+    position: relative;
 }
 
 html {
@@ -1319,4 +1325,56 @@ main .vault-card h2 {
   background-color: #3d94cf;
   box-shadow: none;
   transform: scale(0.98);
+}
+
+.refresh-btn {
+  padding: 6px 18px;
+  border: 0;
+  border-radius: 50px;
+  background-color: #2ba8fb;
+  color: #ffffff;
+  font-weight: Bold;
+  transition: all 0.1s;
+  -webkit-transition: all 0.1s;
+}
+
+.refresh-btn:hover {
+  background-color: #6fc5ff;
+  box-shadow: 0 0 20px #6fc5ff50;
+  transform: scale(1.01);
+  cursor: pointer;
+}
+
+.refresh-btn:active {
+  background-color: #3d94cf;
+  transition: all 0.1s;
+  -webkit-transition: all 0.1s;
+  box-shadow: none;
+  transform: scale(0.99);
+}
+
+.upload-btn {
+  padding: 6px 18px;
+  border: 0;
+  border-radius: 45px;
+  background-color: #2ba8fb;
+  color: #ffffff;
+  font-weight: Bold;
+  transition: all 0.1s;
+  -webkit-transition: all 0.1s;
+}
+
+.upload-btn:hover {
+  background-color: #6fc5ff;
+  box-shadow: 0 0 20px #6fc5ff50;
+  transform: scale(1.01);
+  cursor: pointer;
+}
+
+.upload-btn:active {
+  background-color: #3d94cf;
+  transition: all 0.1s;
+  -webkit-transition: all 0.1s;
+  box-shadow: none;
+  transform: scale(0.99);
 }

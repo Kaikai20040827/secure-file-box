@@ -40,7 +40,11 @@ func JSONOK(context *gin.Context, data interface{}) {
 
 // JSON error
 func JSONError(context *gin.Context, code int, message string) {
-	context.JSON(http.StatusBadRequest, gin.H{
+	status := http.StatusBadRequest
+	if code >= 100 && code <= 599 {
+		status = code
+	}
+	context.JSON(status, gin.H{
 		"code":    code,
 		"message": message,
 	})

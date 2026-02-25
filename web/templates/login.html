@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UMS | Login</title>
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="../static/images/logo.png">
+    <link rel="shortcut icon" href="../static/images/loginlogo.png">
 
     <!-- Google Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
@@ -38,6 +38,9 @@
         .login-container img {
             width: 80px;
             margin-bottom: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .login-container h1 {
@@ -158,11 +161,8 @@
     </div>
 
     <div class="login-container">
-        <img src="../static/images/logo.png" alt="UMS Logo">
-
+        <img class="loginlogo" src="../static/images/loginlogo.png" alt="UMS Logo">
         <h1>Login</h1>
-
-
         <form id="loginForm">
             <div class="input-field">
                 <label for="email">Email</label>
